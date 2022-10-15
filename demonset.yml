@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ais-daemonset
+  labels:
+    k8s-app: ais-logging
+spec:
+  selector:
+    matchLabels:
+      name: ais-agent
+  template:
+    metadata:
+      labels:
+        name: ais-agent
+    spec:
+      containers:
+      - name: fluentd-elasticsearch
+        image: quay.io/fluentd_elasticsearch/fluentd:v2.5.2
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
