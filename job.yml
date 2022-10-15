@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k8s-job
+spec:
+  template:
+    metadata:
+      labels:
+         app: jobexecution
+    spec:
+     containers:
+      - name: job-pod
+        image: ubuntu:latest
+        imagePullPolicy: Always
+        command:
+          - /bin/echo
+        args:
+          - i am a one time Job Execution
+     restartPolicy: OnFailure
