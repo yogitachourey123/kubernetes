@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: example-cronjob
+spec:
+  schedule: '*/2 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: example-cronjob
+        spec:
+          containers:
+          - name: example-cronjob
+            image: ubuntu:latest
+            imagePullPolicy: Always
+            command:
+            - /bin/echo
+            args:
+            - i am a cronjob
+          restartPolicy: OnFailure
