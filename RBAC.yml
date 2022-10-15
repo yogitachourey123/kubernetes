@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: devops
+  namespace: kube-system
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: devops-secret
+  namespace: kube-system
+  annotations:
+     kubernetes.io/service-account.name: devops
+type: kubernetes.io/service-account-token
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: devops-role
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+    
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: devops-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: devops-role
+subjects:
+  - kind: ServiceAccount
+    name: devops
+    namespace: kube-system
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: counterapp
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: developer
+  namespace: counterapp
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: developer-secret
+  namespace: counterapp
+  annotations:
+     kubernetes.io/service-account.name: developer
+type: kubernetes.io/service-account-token
+
+---
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: developer-role
+  namespace: counterapp
+rules:    
+  - apiGroups: [""]
+    resources: ["pods", "services", "secrets", "configmaps"]
+    verbs: ["create","get", "update", "list", "delete"]
+
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets"]
+    verbs: ["create","get", "update", "list", "delete"]
+
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["get", "list"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-binding
+  namespace: counterapp
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: developer-role
+subjects:
+  - kind: ServiceAccount
+    name: developer
+    namespace: counterapp
