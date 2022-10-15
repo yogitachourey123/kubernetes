@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ais-properties-file
+data:
+  ais.properties: |
+    source-org: <source-github-org-or-user>
+    source-repo: <source-repository-name-in-your-org>
+    target-org: <your-github-org-or-user>
+    rules-file: /etc/publisher-rules/config
+    dry-run: true
+   
+  ifm.ini: |
+      oracle_name: "dbhost:1521"
+    
+---
+
+apiVersion: v1 
+kind: ConfigMap 
+metadata:
+  name: ais-config
+data:
+  # Configuration values can be set as key-value properties
+  database: mongodb
+  database_uri: mongodb://localhost:27017
+  ais_debug_mode: DEBUG
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ais-config
+spec:
+  containers:
+  - name: container
+    image: redis
+    env:
+    - name: ENV_NAME
+      value: dev
+    - name: DATABASE_NAME
+      valueFrom:
+         configMapKeyRef:
+            name: ais-config
+            key: database
+    - name: DB_DATABASE_URI
+      valueFrom:
+         configMapKeyRef:
+            name: ais-config
+            key: database_uri
+    - name: AIS_DEBUG_MODE
+      valueFrom:
+         configMapKeyRef:
+               name: ais-config
+               key: ais_debug_mode         
+    volumeMounts:
+    - name: config
+      mountPath: "/config"
+      readOnly: true
+  volumes:
+  - name: config
+    configMap:
+      name: ais-properties-file
