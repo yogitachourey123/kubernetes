@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-service
+  labels:
+    product: actimize
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: web
+    spec:
+      containers:
+      - name: wordpress-container
+        image: wordpress
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 150m
+            memory: 600Mi
+          requests:
+            cpu: 200m
+            memory: 200Mi
