@@ -1,0 +1,7 @@
+
+chmod 777 /var/run/docker.sock
+mkdir -p /var/lib/jenkins/.kube
+cp /etc/kubernetes/admin.conf /var/lib/jenkins/.kube/config
+chown -R jenkins:jenkins /var/lib/jenkins/.kube
+
+   
